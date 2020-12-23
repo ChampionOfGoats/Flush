@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using Flush.Hubs.Requests;
+using System.Security.Claims;
+using Flush.Extensions;
+using Flush.Hubs.Responses;
 
 namespace Flush.Hubs
 {
@@ -15,6 +18,10 @@ namespace Flush.Hubs
     {
         private ILogger<ChatHub> logger;
 
+        private string Room => Context.User
+            .FindFirst(ClaimTypes.NameIdentifier)?
+            .GetFlushRoom();
+
         /// <summary>
         /// Constructs a new ChatHub.
         /// </summary>
@@ -25,15 +32,19 @@ namespace Flush.Hubs
         }
 
         /// </inheritdoc>
-        public override Task OnConnectedAsync()
+        public override async Task OnConnectedAsync()
         {
-            return base.OnConnectedAsync();
+            logger.LogDebug($"Enter {nameof(OnConnectedAsync)}");
+            await Groups.AddToGroupAsync(Context.ConnectionId, Room);
+            logger.LogDebug($"Exit {nameof(OnConnectedAsync)}");
         }
 
         /// </inheritdoc>
-        public override Task OnDisconnectedAsync(Exception exception)
+        public override async Task OnDisconnectedAsync(Exception exception)
         {
-            return base.OnDisconnectedAsync(exception);
+            logger.LogDebug($"Enter {nameof(OnDisconnectedAsync)}");
+            await Groups.RemoveFromGroupAsync(Context.ConnectionId, Room);
+            logger.LogDebug($"Exit {nameof(OnDisconnectedAsync)}");
         }
 
         /// <summary>
@@ -43,7 +54,16 @@ namespace Flush.Hubs
         /// <returns>A task representing the response.</returns>
         public async Task SendMessage(SendMessageRequest request)
         {
-            await Task.CompletedTask;
+            logger.LogDebug($"Enter {nameof(SendMessage)}");
+            await Clients.OthersInGroup(Room)
+                .SendAsync("ReceiveMessage", new SendMessagesResponse()
+                {
+                    Player = Context.User
+                        .FindFirst(ClaimTypes.NameIdentifier)?
+                        .GetFlushUsername(),
+                    Message = request.Message
+                });
+            logger.LogDebug($"Exit {nameof(SendMessage)}");
         }
     }
 }
