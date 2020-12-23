@@ -154,6 +154,7 @@ namespace Flush
                 endpoints.MapControllers();
                 endpoints.MapRazorPages();
                 endpoints.MapHub<SessionHub>(Strings.Configuration.SessionHubEndpoint);
+                endpoints.MapHub<ChatHub>("/chathub");
             });
 
             // We have to request the purge provider at least once, to ensure it
