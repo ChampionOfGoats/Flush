@@ -8,7 +8,8 @@
   {
     "outputFileName": "wwwroot/js/app.min.js",
     "inputFiles": [
-      "wwwroot/js/site.js"
+      "wwwroot/js/site.js",
+      "wwwroot/js/chat.js"
     ],
     "minify": {
       "enabled": true
