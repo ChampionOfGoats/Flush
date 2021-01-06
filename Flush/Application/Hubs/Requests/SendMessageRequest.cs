@@ -1,4 +1,4 @@
-﻿namespace Flush.Hubs.Requests
+﻿namespace Flush.Application.Hubs.Requests
 {
     public class SendMessageRequest
     {

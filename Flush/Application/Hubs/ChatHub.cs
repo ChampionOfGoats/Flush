@@ -3,12 +3,12 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
-using Flush.Hubs.Requests;
+using Flush.Application.Hubs.Requests;
 using System.Security.Claims;
 using Flush.Extensions;
-using Flush.Hubs.Responses;
+using Flush.Application.Hubs.Responses;
 
-namespace Flush.Hubs
+namespace Flush.Application.Hubs
 {
     /// <summary>
     /// A SignalR Hub for receiving and relaying player messages.
