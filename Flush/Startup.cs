@@ -1,10 +1,10 @@
 using System;
 using System.Text;
 using System.Threading.Tasks;
-using Flush.Contracts;
+using Flush.Core;
+using Flush.Databases;
 using Flush.Databases.Entities;
 using Flush.Databases.Identity;
-using Flush.Databases.Application;
 using Flush.Application.Hubs;
 using Flush.Application.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -16,7 +16,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.Extensions.Logging;
 
 namespace Flush
 {
@@ -52,11 +51,12 @@ namespace Flush
 
             services.Configure<IdentityDatabaseOptions>(identityDbSection)
                 .Configure<JwtOptions>(jwtAuthenticationSection)
-                .Configure<FlushDatabaseOptions>(flushDbSection)
+                .Configure<ApplicationDatabaseOptions>(flushDbSection)
                 .AddDbContext<IdentityContext>(ServiceLifetime.Singleton)
                 .AddDbContext<ApplicationContext>(ServiceLifetime.Singleton)
-                .AddTransient<AuthenticationProvider>()
-                .AddSingleton<IDataStore2, ApplicationInMemoryDataStore>();
+                .AddTransient<AuthenticationProvider>();
+                // TODO: Replace with implementation if IApplicationDatabaseProxy
+                //.AddSingleton<IDataStore2, ApplicationInMemoryDataStore>();
 
 
             services.AddSingleton<UserPurgeProvider>();

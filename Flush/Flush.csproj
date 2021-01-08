@@ -16,19 +16,14 @@
     <Folder Include="Areas\" />
     <Folder Include="Areas\Play\" />
     <Folder Include="Areas\Play\Pages\" />
-    <Folder Include="Databases\Identity\" />
-    <Folder Include="Databases\Application\" />
     <Folder Include="Areas\Auth\" />
     <Folder Include="Areas\Auth\Pages\" />
-    <Folder Include="Extensions\" />
     <Folder Include="Areas\Play\Pages\Partials\" />
     <Folder Include="data-sources\" />
-    <Folder Include="Databases\Identity\Migrations\" />
-    <Folder Include="Databases\Entities\" />
-    <Folder Include="Contracts\" />
-    <Folder Include="Databases\Application\Migrations\" />
     <Folder Include="Application\" />
     <Folder Include="Application\Services\" />
+    <Folder Include="Identity\" />
+    <Folder Include="Identity\Migrations\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.1" />
@@ -48,5 +43,13 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="BuildBundlerMinifier" Version="3.2.449" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Flush.Core\Flush.Core.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+    </ProjectReference>
+    <ProjectReference Include="..\Flush.Databases\Flush.Databases.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+    </ProjectReference>
   </ItemGroup>
 </Project>

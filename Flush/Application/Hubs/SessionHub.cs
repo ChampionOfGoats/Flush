@@ -4,7 +4,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Flush.Application.Hubs.Requests;
 using Flush.Application.Hubs.Responses;
-using Flush.Contracts;
+using Flush.Core.Contracts;
 using Flush.Databases.Entities;
 using Flush.Extensions;
 using Microsoft.AspNetCore.Authorization;

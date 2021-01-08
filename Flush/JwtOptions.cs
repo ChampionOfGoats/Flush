@@ -1,4 +1,4 @@
-﻿using Flush.Contracts;
+﻿using Flush.Core.Contracts;
 
 namespace Flush
 {

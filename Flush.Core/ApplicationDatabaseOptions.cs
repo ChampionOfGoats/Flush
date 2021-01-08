@@ -1,12 +1,12 @@
 ﻿using Flush.Core.Contracts;
 
-namespace Flush
+namespace Flush.Core
 {
     /// <summary>
-    /// Models the ASP.NET Core Identity database options application settings
+    /// Models the Flush database options application settings
     /// section.
     /// </summary>
-    public class IdentityDatabaseOptions :  IDatabaseOptions
+    public class ApplicationDatabaseOptions : IDatabaseOptions
     {
         /// <inheritdoc />
         public string ConnectionString { get; set; }
