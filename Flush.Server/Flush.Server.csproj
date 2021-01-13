@@ -2,6 +2,39 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
+    <ReleaseVersion>0.1.0</ReleaseVersion>
+    <OutputType>Library</OutputType>
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <LangVersion>9.0</LangVersion>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <LangVersion>9.0</LangVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <Folder Include="Services\" />
+    <Folder Include="Controllers\" />
+    <Folder Include="Hubs\" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="5.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.1">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.1">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="5.0.1" />
+    <PackageReference Include="SQLitePCLRaw.lib.e_sqlcipher" Version="2.0.4" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Flush.Core\Flush.Core.csproj" />
+    <ProjectReference Include="..\Flush.Tracing\Flush.Tracing.csproj" />
+    <ProjectReference Include="..\Flush.Database\Flush.Database.csproj" />
+    <ProjectReference Include="..\Flush.Configuration\Flush.Configuration.csproj" />
+  </ItemGroup>
 </Project>

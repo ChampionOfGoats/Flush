@@ -1,4 +1,4 @@
-﻿namespace Flush.Core
+﻿namespace Flush.Models
 {
     /// <summary>
     /// Models the phase of a <see cref="Game"/>

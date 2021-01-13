@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace Flush.Core
+namespace Flush.Models
 {
     /// <summary>
     /// Models the modified fibonacci voting scheme.

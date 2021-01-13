@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 
-namespace Flush.Core.Extensions
+namespace Flush.Extensions
 {
     public static class EnumExtensions
     {

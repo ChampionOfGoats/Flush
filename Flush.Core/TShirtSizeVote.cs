@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace Flush.Core
+namespace Flush.Models
 {
     /// <summary>
     /// Models the t-shirt size voting scheme.

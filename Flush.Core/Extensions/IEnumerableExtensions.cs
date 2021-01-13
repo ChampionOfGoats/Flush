@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Flush.Core.Extensions
+namespace Flush.Extensions
 {
     public static class IEnumerableExtensions
     {
