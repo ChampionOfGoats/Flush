@@ -1,9 +1,11 @@
-﻿namespace Flush.Database
+﻿using System;
+
+namespace Flush.Database
 {
     public interface IRoom
     {
-        int RoomId { get; }
+        string RoomUniqueId { get; }
+        string OwnerUniqueId { get; }
         string Name { get; }
-        string Owner { get; }
     }
 }

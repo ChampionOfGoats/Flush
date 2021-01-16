@@ -32,9 +32,11 @@
     <PackageReference Include="SQLitePCLRaw.lib.e_sqlcipher" Version="2.0.4" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Flush.Core\Flush.Core.csproj" />
     <ProjectReference Include="..\Flush.Tracing\Flush.Tracing.csproj" />
     <ProjectReference Include="..\Flush.Database\Flush.Database.csproj" />
     <ProjectReference Include="..\Flush.Configuration\Flush.Configuration.csproj" />
+    <ProjectReference Include="..\Flush.Core\Flush.Shared.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+    </ProjectReference>
   </ItemGroup>
 </Project>

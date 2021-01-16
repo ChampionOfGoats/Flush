@@ -1,21 +1,17 @@
 using System;
-using System.Text;
-using System.Threading.Tasks;
 using Flush.Configuration;
-using Flush.Core;
+using Flush.Contracts;
 using Flush.Database.EntityFrameworkCore;
 using Flush.Server.Hubs;
 using Flush.Server.Services;
 using Flush.Tracing;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using Microsoft.IdentityModel.Tokens;
 
 namespace Flush.Server.Host
 {
@@ -53,58 +49,21 @@ namespace Flush.Server.Host
 
             // Add Identity.
             services.AddDbContext<IdentityContext>();
-            var identityBuilder = services.AddIdentity<IdentityUser, IdentityRole>();
+            var identityBuilder = services.AddIdentity<ApplicationUser, IdentityRole>();
             identityBuilder.AddEntityFrameworkStores<IdentityContext>();
 
             // Add authentication proxy.
-            services.AddScoped<IAuthenticationServiceProxy,
-                AspNetCoreIdentityAuthenticationServiceProxy>();
+            services.AddScoped<IAuthenticationServiceProxy, AspNetCoreIdentityAuthenticationServiceProxy>();
 
             // Add Authentication.
-            var bearerTokenConfiguration = Configuration
-                .GetSection(BearerTokenConfiguration.SECTION)
-                .Get<BearerTokenConfiguration>();
             var authenticationBuilder = services.AddAuthentication(options =>
             {
-                options.DefaultAuthenticateScheme = "Bearer";
-                options.DefaultChallengeScheme = "Bearer";
+                options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.RequireAuthenticatedSignIn = false;
             });
-
-            // Add Bearer Tokens.
-            authenticationBuilder.AddJwtBearer(options =>
+            authenticationBuilder.AddCookie(options =>
             {
-                options.SaveToken = true;
-                options.Configuration = new OpenIdConnectConfiguration();
-
-                // Configure validation from file.
-                options.TokenValidationParameters = new TokenValidationParameters()
-                {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
-                    ValidIssuer = bearerTokenConfiguration.Issuer,
-                    ValidAudience = bearerTokenConfiguration.Audience,
-                    ClockSkew = TimeSpan.FromSeconds(bearerTokenConfiguration.Skew),
-                    IssuerSigningKey = new SymmetricSecurityKey(
-                        Encoding.Default.GetBytes(bearerTokenConfiguration.Key)),
-                };
-
-                // Configure event pipeline to receive tokens.
-                options.Events = new JwtBearerEvents()
-                {
-                    OnMessageReceived = async (messageReceivedContext) =>
-                    {
-                        var token = messageReceivedContext
-                            .Request
-                            .Query["access_token"];
-                        if (!string.IsNullOrWhiteSpace(token))
-                        {
-                            messageReceivedContext.Token = token;
-                        }
-                        await Task.CompletedTask;
-                    }
-                };
             });
 
             // Add tracing.

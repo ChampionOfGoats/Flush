@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Flush.Contracts;
 using Flush.Models;
 using Flush.Server.Hubs;
 using Microsoft.AspNetCore.Authorization;

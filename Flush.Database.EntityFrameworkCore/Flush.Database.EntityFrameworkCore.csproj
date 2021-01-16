@@ -30,6 +30,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Flush.Database\Flush.Database.csproj" />
     <ProjectReference Include="..\Flush.Configuration\Flush.Configuration.csproj" />
-    <ProjectReference Include="..\Flush.Core\Flush.Core.csproj" />
+    <ProjectReference Include="..\Flush.Core\Flush.Shared.csproj" />
   </ItemGroup>
 </Project>

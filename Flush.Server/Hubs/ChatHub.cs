@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Flush.Models;
+using Flush.Contracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 

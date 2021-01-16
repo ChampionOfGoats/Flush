@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Security.Claims;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,7 +14,7 @@ namespace Flush.Server
         /// Get an existing user account.
         /// </summary>
         /// <returns>A matching user, else null.</returns>
-        Task<IdentityUser> GetExistingUser();
+        Task<ApplicationUser> GetExistingUser(string userId);
 
         /// <summary>
         /// Register a new, permanent user.
@@ -33,7 +34,7 @@ namespace Flush.Server
         /// <returns>
         /// Http Ok, containing a bearer token, on success; else Http BadRequest.
         /// </returns>
-        Task<IActionResult> SignIn();
+        Task<IActionResult> SignIn(ClaimsPrincipal claimsPrincipal);
 
         /// <summary>
         /// Sign a user out.
@@ -45,6 +46,6 @@ namespace Flush.Server
         /// Remove a user.
         /// </summary>
         /// <returns>Http Ok on success, else Http BadRequest.</returns>
-        Task<IActionResult> RemoveUser();
+        Task<IActionResult> RemoveUser(string userId);
     }
 }

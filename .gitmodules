@@ -1,0 +1,3 @@
+[submodule "Flush.BlazorUtils"]
+	path = Flush.BlazorUtils
+	url = git@github.com:ChampionOfGoats/Flush.BlazorUtils.git

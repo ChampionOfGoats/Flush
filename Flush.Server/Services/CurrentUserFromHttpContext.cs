@@ -1,6 +1,7 @@
 ﻿using System;
-using System.Security.Claims;
-using Flush.Core;
+using Flush.Contracts;
+using Flush.Models;
+using Flush.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
@@ -14,53 +15,17 @@ namespace Flush.Server.Services
         private readonly ILogger<CurrentUserFromHttpContext> logger;
         private readonly IHttpContextAccessor context;
 
-        /// <summary>
-        /// Get a value indicating the authentication status of the user.
-        /// </summary>
-        public bool IsAuthenticated =>
-            context.HttpContext.User?.Identity.IsAuthenticated ?? false;
+        /// <inheritdoc/>
+        public string DisplayName =>
+            context.HttpContext.User?.FindFirst(ClaimType.FullName.Description()).Value;
 
-        /// <summary>
-        /// Gets the primary key GUID of the logged in user.
-        /// </summary>
-        public string Id =>
-            context.HttpContext.User?.FindFirst(ClaimTypes.NameIdentifier).Value;
+        /// <inheritdoc/>
+        public string UniqueId =>
+            context.HttpContext.User?.FindFirst(ClaimType.UserIdentifier.Description()).Value;
 
-        /// <summary>
-        /// Gets the first name of the logged in user.
-        /// </summary>
-        public string FirstName =>
-            context.HttpContext.User?.FindFirst(ClaimTypes.GivenName).Value;
-
-        /// <summary>
-        /// Gets the last name of the logged in user.
-        /// </summary>
-        public string LastName =>
-            context.HttpContext.User?.FindFirst(ClaimTypes.Surname).Value;
-
-        /// <summary>
-        /// Gets the full name of the logged in user.
-        /// </summary>
-        public string FullName =>
-            $"{FirstName} {LastName}".Trim();
-
-        /// <summary>
-        /// Gets the email address of the logged in user.
-        /// </summary>
-        public string Email =>
-            context.HttpContext.User?.FindFirst(ClaimTypes.Email).Value;
-
-        /// <summary>
-        /// Gets the username of the logged in user.
-        /// </summary>
-        public string UserName =>
-            context.HttpContext.User?.FindFirst(ClaimTypes.Name).Value;
-
-        /// <summary>
-        /// Gets the room that the user has logged in to.
-        /// </summary>
-        public string CurrentRoom =>
-            context.HttpContext.User?.FindFirst(ClaimTypes.UserData).Value;
+        /// <inheritdoc/>
+        public string RoomUniqueId =>
+            context.HttpContext.User?.FindFirst(ClaimType.RoomUniqueId.Description()).Value;
 
         /// <summary>
         /// Creates a new instance of the CurrentUserService.

@@ -5,12 +5,15 @@ namespace Flush.Database.EntityFrameworkCore
 {
     internal class Room : IRoom
     {
-        public int RoomId { get; set; }
-        [Required]
-        public string Name { get; set; }
-        [Required]
-        public string Owner { get; set; }
+        [Key] public int RoomId { get; set; }
 
+        [Required] public string RoomUniqueId { get; set; }
+
+        public string OwnerUniqueId { get; set; }
+
+        [Required] public string Name { get; set; }
+
+        // One-to-Many with Sessions
         public ICollection<Session> Sessions { get; set; }
     }
 }

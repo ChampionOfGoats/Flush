@@ -28,14 +28,24 @@ namespace Flush.Database.EntityFrameworkCore
         }
 
         /// <summary>
-        /// The game rooms.
+        /// The applications rooms.
         /// </summary>
-        public DbSet<Room> Room { get; set; }
+        public DbSet<Room> Rooms { get; set; }
 
         /// <summary>
-        /// The game sessions.
+        /// The play sessions.
         /// </summary>
         public DbSet<Session> Sessions { get; set; }
+
+        /// <summary>
+        /// The participants of sessions.
+        /// </summary>
+        public DbSet<Participant> Participants { get; set; }
+
+        /// <summary>
+        /// Mapping entity for Session-Participant M-N relationship.
+        /// </summary>
+        public DbSet<SessionParticipant> SessionParticipants { get; set; }
 
         /// <inheritdoc />
         protected override void OnModelCreating(ModelBuilder modelBuilder)

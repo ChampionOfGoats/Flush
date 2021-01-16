@@ -1,21 +1,27 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Flush.Server.Hubs;
-using Flush.Models;
+using Flush.Contracts;
+using Flush.Database;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
+using System;
+using Flush.Models;
 
 namespace Flush.Server.Controllers
 {
     [Authorize]
-    [ApiController]
     [Route("api/v2/[controller]")]
     public sealed class SessionController : ControllerBase
     {
+        private static readonly IActionResult ok = new OkResult();
+        private static readonly IActionResult badRequest = new BadRequestResult();
+
         private readonly ILogger<SessionController> logger;
         private readonly IHubContext<SessionHub, ISessionClient> hubContext;
+        private readonly ICurrentUser currentUser;
+        private readonly IApplicationDatabaseProxy applicationDatabaseProxy;
 
         /// <summary>
         /// Create a new instance of the SessionController.
@@ -23,48 +29,124 @@ namespace Flush.Server.Controllers
         /// <param name="logger">The logger.</param>
         /// <param name="hubContext">A SessionHub context.</param>
         public SessionController(ILogger<SessionController> logger,
-            IHubContext<SessionHub, ISessionClient> hubContext)
+            IHubContext<SessionHub, ISessionClient> hubContext,
+            ICurrentUser currentUser,
+            IApplicationDatabaseProxy applicationDatabaseProxy)
         {
             logger.LogInformation($"Initialising {nameof(SessionController)}.");
 
             this.logger = logger;
             this.hubContext = hubContext;
-        }
-        // GET: api/v2/session
-        [HttpGet]
-        public async Task<IEnumerable<string>> Get()
-        {
-            await Task.CompletedTask;
-            return new string[] { "value1", "value2" };
+            this.currentUser = currentUser;
+            this.applicationDatabaseProxy = applicationDatabaseProxy;
         }
 
-        // GET api/v2/session/5
-        [HttpGet("{id}")]
-        public async Task<string> Get(int id)
-        {
-            await Task.CompletedTask;
-            return "value";
-        }
-
-        // POST api/v2/session
         [HttpPost]
-        public async Task Post([FromBody] string value)
+        [Route("vote")]
+        public async Task<IActionResult> SendVote(SendVoteRequest sendVoteRequest)
         {
-            await Task.CompletedTask;
+            logger.LogDebug($"Entered {nameof(SendVote)}.");
+
+            if (currentUser is null)
+            {
+                await Task.CompletedTask;
+                var exception = new NullReferenceException(nameof(currentUser));
+                logger.LogError(exception, string.Empty);
+                return badRequest;
+            }
+
+            var session = await applicationDatabaseProxy.GetActiveSession(currentUser.RoomUniqueId);
+            if (session is null || session.Phase != (int)GamePhase.Voting)
+            {
+                await Task.CompletedTask;
+                var exception = new InvalidOperationException("No session or bad state.");
+                logger.LogError(exception, string.Empty);
+                return badRequest;
+            }
+
+            logger.LogDebug($"{currentUser.UniqueId} votes {sendVoteRequest.Vote}.");
+            if (!int.TryParse(sendVoteRequest.Vote, out int iVote))
+            {
+                await Task.CompletedTask;
+                var exception = new ArgumentException(nameof(sendVoteRequest.Vote));
+                logger.LogError(exception, string.Empty);
+                return badRequest;
+            }
+
+            var clamped = Math.Max(iVote, (int)ModifiedFibonacciVote.Zero);
+            clamped = Math.Min(clamped, (int)ModifiedFibonacciVote.Unknown);
+            if (iVote != clamped)
+            {
+                await Task.CompletedTask;
+                var exception = new ArgumentException(nameof(sendVoteRequest.Vote));
+                logger.LogError(exception, string.Empty);
+                return badRequest;
+            }
+
+            await applicationDatabaseProxy.SetParticipantLastVote(currentUser.RoomUniqueId, currentUser.UniqueId, iVote);
+            var receiveVoteResponse = new ReceiveVoteResponse { PlayerId = currentUser.UniqueId };
+            await hubContext.Clients
+                .Group("ROOM_NAME_HERE")
+                .ReceiveVote(receiveVoteResponse);
+
+
+            logger.LogDebug($"Exiting {nameof(SendVote)}.");
+            return ok;
         }
 
-        // PUT api/v2/session/5
-        [HttpPut("{id}")]
-        public async Task Put(int id, [FromBody] string value)
+        [HttpPost]
+        [Route("changerole")]
+        public async Task<IActionResult> ChangeRole(ChangeRoleRequest changeRoleRequest)
         {
-            await Task.CompletedTask;
+            logger.LogDebug($"Entered {nameof(ChangeRole)}.");
+
+            if (currentUser is null)
+            {
+                await Task.CompletedTask;
+                var exception = new NullReferenceException(nameof(currentUser));
+                logger.LogError(exception, string.Empty);
+                return badRequest;
+            }
+
+            // Todo: change internal moderator state.
+            var roleChangedResponse = new RoleChangedResponse
+            {
+                PlayerId = currentUser.UniqueId,
+                IsModerator = changeRoleRequest.IsModerator
+            };
+            await hubContext.Clients
+                .Group("ROOM_NAME_HERE")
+                .RoleChanged(roleChangedResponse);
+
+            logger.LogDebug($"Exiting {nameof(ChangeRole)}.");
+            return ok;
         }
 
-        // DELETE api/v2/session/5
-        [HttpDelete("{id}")]
-        public async Task Delete(int id)
+        [HttpPost]
+        [Route("transition")]
+        public async Task<IActionResult> Transition(TransitionRequest transitionRequest)
         {
-            await Task.CompletedTask;
+            logger.LogDebug($"Entered {nameof(Transition)}.");
+
+            if (currentUser is null)
+            {
+                await Task.CompletedTask;
+                var exception = new NullReferenceException(nameof(currentUser));
+                logger.LogError(exception, string.Empty);
+                return badRequest;
+            }
+
+            var phase = transitionRequest.Type == TransitionType.ToDiscussion ?
+                GamePhase.Results : GamePhase.Voting;
+            // applicatiomDatabaseProxy.SetSessionPhase(currentUser.Room, (int)phase);
+
+            var transitionResponse = new TransitionResponse() { Type = transitionRequest.Type };
+            await hubContext.Clients
+                .Group("ROOM_NAME_HERE")
+                .Transition(transitionResponse);
+
+            logger.LogDebug($"Exiting {nameof(Transition)}.");
+            return ok;
         }
     }
 }

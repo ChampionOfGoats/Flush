@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -12,8 +15,14 @@ namespace Flush.Server.Services
     public sealed class AspNetCoreIdentityAuthenticationServiceProxy
         : IAuthenticationServiceProxy
     {
-        private ILogger<AspNetCoreIdentityAuthenticationServiceProxy> logger;
-        private readonly UserManager<IdentityUser> userManager;
+        private static readonly string NON_EXISTENT_USER = @"User does not exist.";
+
+        private static readonly OkResult ok = new OkResult();
+        private static readonly BadRequestResult badRequest = new BadRequestResult();
+
+        private readonly ILogger<AspNetCoreIdentityAuthenticationServiceProxy> logger;
+        private readonly UserManager<ApplicationUser> userManager;
+        private readonly SignInManager<ApplicationUser> signInManager;
 
         /// <summary>
         /// Create a new instance of the
@@ -25,16 +34,18 @@ namespace Flush.Server.Services
         /// </param>
         public AspNetCoreIdentityAuthenticationServiceProxy(
             ILogger<AspNetCoreIdentityAuthenticationServiceProxy> logger,
-            UserManager<IdentityUser> userManager)
+            UserManager<ApplicationUser> userManager,
+            SignInManager<ApplicationUser> signInManager)
         {
             this.logger = logger;
             this.userManager = userManager;
+            this.signInManager = signInManager;
         }
 
         /// <inheritdoc/>
-        public Task<IdentityUser> GetExistingUser()
+        public async Task<ApplicationUser> GetExistingUser(string userId)
         {
-            throw new NotImplementedException();
+            return await userManager.FindByIdAsync(userId);
         }
 
         /// <inheritdoc/>
@@ -50,21 +61,40 @@ namespace Flush.Server.Services
         }
 
         /// <inheritdoc/>
-        public Task<IActionResult> SignIn()
+        public async Task<IActionResult> SignIn(ClaimsPrincipal claimsPrincipal)
         {
-            throw new NotImplementedException();
+            await signInManager.Context.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                claimsPrincipal);
+            return ok;
         }
 
         /// <inheritdoc/>
-        public Task<IActionResult> SignOut()
+        public async Task<IActionResult> SignOut()
         {
-            throw new NotImplementedException();
+            await signInManager.SignOutAsync();
+            return ok;
         }
 
         /// <inheritdoc/>
-        public Task<IActionResult> RemoveUser()
+        public async Task<IActionResult> RemoveUser(string userId)
         {
-            throw new NotImplementedException();
+            // Try to find the user.
+            var user = await GetExistingUser(userId);
+            if (user is null)
+            {
+                var exception = new InvalidOperationException(NON_EXISTENT_USER);
+                logger.LogError(exception, string.Empty);
+                return new BadRequestResult();
+            }
+
+            // Sign the user out.
+            await signInManager.SignOutAsync();
+
+            // Delete the user.
+            // This has the effect of invalidating tokens, too.
+            var result = await userManager.DeleteAsync(user);
+            return result.Succeeded ? ok : badRequest;
         }
     }
 }

@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using System.Timers;
 using Microsoft.Extensions.Logging;
 
-namespace Flush.Core
+namespace Flush.Services
 {
     /// <summary>
     /// Base class for services that should autorun at fixed interval.

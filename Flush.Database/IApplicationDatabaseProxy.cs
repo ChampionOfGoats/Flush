@@ -5,51 +5,41 @@ using System.Threading.Tasks;
 
 namespace Flush.Database
 {
+    /// <summary>
+    /// Describes the functionality required by the application database.
+    /// </summary>
     public interface IApplicationDatabaseProxy : IDisposable
     {
-        /***********************************************************************
-         * Room APIs
-         **********************************************************************/
+        //
+        // CREATE
+        //
 
-        /// <summary>
-        /// Get or create a new game room.
-        /// </summary>
-        /// <param name="name">The name of the room.</param>
-        /// <param name="ownerId">The owner of the room, or null.</param>
-        /// <exception cref="SecurityException"></exception>
-        /// <returns>An IRoom representing the room.</returns>
-        Task<IRoom> GetOrCreateRoom(string name);
+        Task<IRoom> CreateRoom(string roomName);
+        Task<ISession> CreateSession(string roomUniqueId);
+        Task<IParticipant> CreateParticipant(string roomUniqueId, string applicationUserUniqueId);
 
-        /// <summary>
-        /// Set the name of a room.
-        /// </summary>
-        /// <exception cref="SecurityException"></exception>
-        /// <returns>Nothing.</returns>
-        Task SetRoomName(IRoom room, string name);
+        //
+        // READ
+        //
 
-        /// <summary>
-        /// Set the owner of a room.
-        /// </summary>
-        /// <exception cref="SecurityException"></exception>
-        /// <returns>Nothing.</returns>
-        Task SetRoomOwner(IRoom room);
+        Task<IRoom> GetRoom(string roomUniqueId);
+        Task<ISession> GetActiveSession(string roomUniqueId);
+        Task<IParticipant> GetParticipant(string roomUniqueId, string applicationUserUniqueId);
+        Task<IEnumerable<IParticipant>> GetParticipants(string roomUniqueId);
 
-        /***********************************************************************
-         * Session APIs
-         **********************************************************************/
+        //
+        // UPDATE
+        //
 
-        /// <summary>
-        /// Get or create a new game session.
-        /// </summary>
-        /// <exception cref="SecurityException"></exception>
-        /// <returns>An ISession representing the session.</returns>
-        Task<ISession> GetOrStartSession(IRoom room);
+        Task SetRoomName(string roomUniqueId, string roomName);
+        Task SetRoomOwner(string roomUniqueId, string applicationUserUniqueId);
+        Task SetParticipantLastSeen(string roomUniqueId, string applicationUserUniqueId);
+        Task SetParticipantLastVote(string roomUniqueId, string applicationUserUniqueId, int vote);
 
-        /// <summary>
-        /// End an in-progress game session.
-        /// </summary>
-        /// <exception cref="SecurityException"></exception>
-        /// <returns>Nothing.</returns>
-        Task EndSession(ISession session);
+        //
+        // DELETE
+        //
+
+        Task EndActiveSession(string roomId);
     }
 }
