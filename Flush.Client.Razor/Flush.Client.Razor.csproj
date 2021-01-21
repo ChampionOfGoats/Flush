@@ -1,0 +1,40 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <ReleaseVersion>0.1.0</ReleaseVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Remove="wwwroot\img\avatar\SVG\Asset 18.svg" />
+    <Content Remove="wwwroot\img\avatar\SVG\Asset 20.svg" />
+    <Content Remove="wwwroot\img\avatar\SVG\Asset 13.svg" />
+    <Content Remove="wwwroot\img\avatar\SVG\Asset 12.svg" />
+    <Content Remove="wwwroot\img\avatar\SVG\Asset 10.svg" />
+    <Content Remove="wwwroot\img\avatar\SVG\Asset 11.svg" />
+    <Content Remove="wwwroot\img\avatar\SVG\Asset 15.svg" />
+    <Content Remove="wwwroot\img\avatar\SVG\Asset 14.svg" />
+    <Content Remove="wwwroot\img\avatar\SVG\Asset 16.svg" />
+    <Content Remove="wwwroot\img\avatar\SVG\Asset 17.svg" />
+    <Content Remove="wwwroot\img\avatar\SVG\Asset 8.svg" />
+    <Content Remove="wwwroot\img\avatar\SVG\Asset 9.svg" />
+    <Content Remove="wwwroot\lib\chart\dist\Chart.bundle.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Flush.Database.EntityFrameworkCore\Flush.Database.EntityFrameworkCore.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+    </ProjectReference>
+    <ProjectReference Include="..\Flush.Server\Flush.Server.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+    </ProjectReference>
+    <ProjectReference Include="..\Flush.Shared\Flush.Shared.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+    </ProjectReference>
+    <ProjectReference Include="..\Flush.Authentication.AspNetCoreIdentity\Flush.Authentication.AspNetCoreIdentity.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="BuildBundlerMinifier" Version="3.2.449" />
+  </ItemGroup>
+</Project>

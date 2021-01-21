@@ -1,5 +1,5 @@
 using Flush.Configuration;
-using Microsoft.Data.Sqlite;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
@@ -30,39 +30,57 @@ namespace Flush.Database.EntityFrameworkCore
         /// <summary>
         /// The applications rooms.
         /// </summary>
+        /// <remarks>
+        /// Room 1 <-> N Session
+        /// Room 1 <-> 0..1 UniqueUser
+        /// </remarks>
         public DbSet<Room> Rooms { get; set; }
 
         /// <summary>
         /// The play sessions.
         /// </summary>
+        /// <remarks>
+        /// Session 1 <-> N Participant
+        /// Session N <-> 1 Room
+        /// </remarks>
         public DbSet<Session> Sessions { get; set; }
 
         /// <summary>
         /// The participants of sessions.
         /// </summary>
+        /// <remarks>
+        /// Participant N <-> 1 UniqueUser
+        /// Participant N <-> 1 Session
+        /// </remarks>
         public DbSet<Participant> Participants { get; set; }
 
         /// <summary>
-        /// Mapping entity for Session-Participant M-N relationship.
+        /// The anonymised unique users.
         /// </summary>
-        public DbSet<SessionParticipant> SessionParticipants { get; set; }
+        /// <remarks>
+        /// UniqueUser 1 <-> N Participant
+        /// UniqueUser 1 <-> 0..N Room
+        /// </remarks>
+        public DbSet<UniqueUser> UniqueUsers { get; set; }
 
         /// <inheritdoc />
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+
             base.OnModelCreating(modelBuilder);
         }
 
         /// <inheritdoc />
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            var connectionString = new SqliteConnectionStringBuilder(
+            var connectionString = new SqlConnectionStringBuilder(
                 applicationDatabaseConfiguration.ConnectionString)
             {
-                Mode = SqliteOpenMode.ReadWriteCreate,
-                Password = applicationDatabaseConfiguration.Key
+                // TODO: These are development creds for an ephemeral SQL Server '19 Express container on my local machine. Replace with config.
+                UserID = "SA",
+                Password = "V3ryStr0nk_"
             }.ToString();
-            optionsBuilder.UseSqlite(connectionString);
+            optionsBuilder.UseSqlServer(connectionString);
         }
     }
 }

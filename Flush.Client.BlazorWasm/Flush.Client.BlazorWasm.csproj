@@ -23,10 +23,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Flush.Core\Flush.Shared.csproj">
+    <ProjectReference Include="..\Flush.BlazorUtils\Flush.BlazorUtils.csproj">
       <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
     </ProjectReference>
-    <ProjectReference Include="..\Flush.BlazorUtils\Flush.BlazorUtils.csproj">
+    <ProjectReference Include="..\Flush.Shared\Flush.Shared.csproj">
       <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
     </ProjectReference>
   </ItemGroup>

@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-dotnet Flush.dll
+dotnet Flush.Client.Razor.dll

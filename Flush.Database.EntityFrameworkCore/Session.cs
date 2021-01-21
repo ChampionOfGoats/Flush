@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 
 namespace Flush.Database.EntityFrameworkCore
 {
@@ -14,12 +13,11 @@ namespace Flush.Database.EntityFrameworkCore
 
         public int Phase { get; set; }
 
-        // One-to-Many with Rooms.
+        // One session has One room.
         public int RoomId { get; set; }
-
         public Room Room { get; set; }
 
-        // Many-to-Many with Participants
-        public IEnumerable<SessionParticipant> SessionParticipants { get; set; }
+        // One session has Many participants.
+        public IEnumerable<Participant> Participants { get; set; }
     }
 }

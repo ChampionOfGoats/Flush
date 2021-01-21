@@ -18,33 +18,24 @@ namespace Flush.Database.EntityFrameworkCore
     {
         private readonly ILogger<ApplicationDatabaseEfCoreProxy> logger;
         private readonly ApplicationContext context;
-        private readonly IDbContextTransaction transaction;
-        private readonly ICurrentUser currentUser;
 
         /// <summary>
         /// Create a new instance of ApplicationDatabaseEfCoreProxy
         /// </summary>
         /// <param name="logger"></param>
         /// <param name="context"></param>
-        /// <param name="currentUser"></param>
         public ApplicationDatabaseEfCoreProxy(
             ILogger<ApplicationDatabaseEfCoreProxy> logger,
-            ApplicationContext context,
-            ICurrentUser currentUser)
+            ApplicationContext context)
         {
             logger.LogInformation($"Initialising {nameof(ApplicationDatabaseEfCoreProxy)}.");
             this.logger = logger;
             this.context = context;
-            this.currentUser = currentUser;
-
-            transaction = context.Database.BeginTransaction();
         }
 
         /// <inheritdoc/>
         public void Dispose()
         {
-            logger.LogDebug($"Committing transaction.");
-            transaction.Commit();
             logger.LogInformation($"Disposing {nameof(ApplicationDatabaseEfCoreProxy)}.");
         }
 
@@ -91,7 +82,6 @@ namespace Flush.Database.EntityFrameworkCore
             }
 
             var sessionQuery = context.Sessions
-                .Include(s => s.Room)
                 .Where(s => s.Room.RoomUniqueId == roomUniqueId);
             logger.LogDebug($"{sessionQuery.ToQueryString()}");
 
@@ -114,7 +104,7 @@ namespace Flush.Database.EntityFrameworkCore
                 {
                     StartDateTime = DateTime.UtcNow,
                     Phase = (int)GamePhase.Voting,
-                    RoomId = room.RoomId
+                    Room = room
                 };
 
                 await context.Sessions.AddAsync(session);
@@ -146,47 +136,53 @@ namespace Flush.Database.EntityFrameworkCore
                 return null;
             }
 
+            var sessionQuery = context.Sessions
+                .Where(s => s.Room.RoomUniqueId == roomUniqueId)
+                .Where(s => s.EndDateTime == null);
+            logger.LogDebug($"{sessionQuery.ToQueryString()}");
+
+            var session = await sessionQuery.SingleOrDefaultAsync();
+            if (session is null)
+            {
+                var exception = new NullReferenceException(nameof(session));
+                logger.LogErrorAndThrow(exception);
+                return null;
+            }
+
+            var uniqueUserQuery = context.UniqueUsers
+                .Where(uu => uu.ApplicationUserId == applicationUserUniqueId);
+            logger.LogDebug($"{uniqueUserQuery.ToQueryString()}");
+
+            var uniqueUser = await uniqueUserQuery.SingleOrDefaultAsync();
+            if (uniqueUserQuery is null)
+            {
+                uniqueUser = new UniqueUser
+                {
+                    ApplicationUserId = applicationUserUniqueId
+                };
+
+                await context.UniqueUsers.AddAsync(uniqueUser);
+                await context.SaveChangesAsync();
+            }
+
             var participantQuery = context.Participants
-                .Where(p => p.ParticipantUniqueId == applicationUserUniqueId);
+                .Where(p => p.SessionId == session.SessionId)
+                .Where(p => p.UniqueUserId == uniqueUser.UniqueUserId);
             logger.LogDebug($"{participantQuery.ToQueryString()}");
 
             var participant = await participantQuery.SingleOrDefaultAsync();
             if (participant is null)
             {
-                // In creating a new participant, we should link it to the active session.
-                // HOWEVER, we should only proceed if there is indeed an active session.
-
-                var sessionQuery = context.Sessions
-                    .Include(s => s.Room)
-                    .Where(s => s.Room.RoomUniqueId == roomUniqueId)
-                    .Where(s => s.EndDateTime == null);
-                logger.LogDebug($"{sessionQuery.ToQueryString()}");
-
-                var session = await sessionQuery.SingleOrDefaultAsync();
-                if (session is null)
-                {
-                    var exception = new NullReferenceException(nameof(session));
-                    logger.LogErrorAndThrow(exception);
-                    return null;
-                }
-
                 participant = new Participant
                 {
-                    ParticipantUniqueId = applicationUserUniqueId,
-                };
-
-                var sessionParticipant = new SessionParticipant
-                {
                     Session = session,
-                    Participant = participant
+                    UniqueUser = uniqueUser,
+                    IsModerator = false
                 };
 
                 await context.Participants.AddAsync(participant);
-                await context.SessionParticipants.AddAsync(sessionParticipant);
                 await context.SaveChangesAsync();
             }
-
-            // TODO: Do we want to enforce session linkage here? Or is that too presumptious...
 
             logger.LogDebug($"Exiting {nameof(CreateParticipant)}.");
             return participant;
@@ -211,9 +207,10 @@ namespace Flush.Database.EntityFrameworkCore
 
             var roomQuery = context.Rooms
                 .Where(r => r.RoomUniqueId == roomUniqueId);
-            logger.LogDebug($"{roomQuery.ToQueryString()}");
+            logger.LogDebug("Test");
+            logger.LogDebug($"YOUR MOTHER{roomQuery.ToQueryString()}");
 
-            var room = await roomQuery.SingleOrDefaultAsync();
+            var room = await roomQuery.FirstOrDefaultAsync();
             if (room is null)
             {
                 var exception = new NullReferenceException(nameof(room));
@@ -239,7 +236,6 @@ namespace Flush.Database.EntityFrameworkCore
             }
 
             var sessionQuery = context.Sessions
-                .Include(s => s.Room)
                 .Where(s => s.Room.RoomUniqueId == roomUniqueId)
                 .Where(s => s.EndDateTime == null);
             logger.LogDebug($"{sessionQuery.ToQueryString()}");
@@ -306,24 +302,22 @@ namespace Flush.Database.EntityFrameworkCore
                 return null;
             }
 
-            var participantQuery = context.Sessions
-                .Include(s => s.Room)
+            var sessionQuery = context.Sessions
                 .Where(s => s.Room.RoomUniqueId == roomUniqueId)
-                .SelectMany(s => s.SessionParticipants)
-                .Select(sp => sp.Participant)
-                .Distinct();
-            logger.LogDebug($"{participantQuery.ToQueryString()}");
+                .Where(s => s.EndDateTime == null)
+                .Include(s => s.Participants);
+            logger.LogDebug($"{sessionQuery.ToQueryString()}");
 
-            var participants = await participantQuery.ToListAsync();
-            if (participants is null)
+            var session = await sessionQuery.SingleOrDefaultAsync();
+            if (session is null)
             {
-                var exception = new NullReferenceException(nameof(participants));
+                var exception = new NullReferenceException(nameof(session));
                 logger.LogErrorAndThrow(exception);
                 return null;
             }
 
             logger.LogDebug($"Exiting {nameof(GetParticipants)}.");
-            return participants;
+            return session.Participants;
         }
 
         //
@@ -393,7 +387,7 @@ namespace Flush.Database.EntityFrameworkCore
 
             var roomQuery = context.Rooms
                 .Where(r => r.RoomUniqueId == roomUniqueId)
-                .Where(r => r.OwnerUniqueId == applicationUserUniqueId);
+                .Where(r => r.UniqueUserId == null);
             logger.LogDebug($"{roomQuery.ToQueryString()}");
 
             var room = await roomQuery.SingleOrDefaultAsync();
@@ -404,7 +398,19 @@ namespace Flush.Database.EntityFrameworkCore
                 return;
             }
 
-            room.OwnerUniqueId = applicationUserUniqueId;
+            var uniqueUserQuery = context.UniqueUsers
+                .Where(uu => uu.ApplicationUserId == applicationUserUniqueId);
+            logger.LogDebug($"{uniqueUserQuery.ToQueryString()}");
+
+            var uniqueUser = await uniqueUserQuery.SingleOrDefaultAsync();
+            if (uniqueUser is null)
+            {
+                var exception = new NullReferenceException(nameof(uniqueUser));
+                logger.LogErrorAndThrow(exception);
+                return;
+            }
+
+            room.UniqueUser = uniqueUser;
             await context.SaveChangesAsync();
 
             logger.LogDebug($"Exiting {nameof(SetRoomOwner)}.");
@@ -491,6 +497,46 @@ namespace Flush.Database.EntityFrameworkCore
             return;
         }
 
+        /// <inheritdoc/>
+        public async Task SetParticipantIsModerator(string roomUniqueId, string applicationUserUniqueId, bool isModerator)
+        {
+            logger.LogDebug($"Entering {nameof(SetParticipantIsModerator)}.");
+
+            if (string.IsNullOrWhiteSpace(roomUniqueId))
+            {
+                await Task.CompletedTask;
+                var exception = new ArgumentNullException(nameof(roomUniqueId));
+                logger.LogErrorAndThrow(exception);
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(applicationUserUniqueId))
+            {
+                await Task.CompletedTask;
+                var exception = new ArgumentNullException(nameof(applicationUserUniqueId));
+                logger.LogErrorAndThrow(exception);
+                return;
+            }
+
+            var participantQuery = context.Participants
+                .Where(p => p.ParticipantUniqueId == applicationUserUniqueId);
+            logger.LogDebug($"{participantQuery.ToQueryString()}");
+
+            var participant = await participantQuery.SingleOrDefaultAsync();
+            if (participant is null)
+            {
+                var exception = new NullReferenceException(nameof(participant));
+                logger.LogErrorAndThrow(exception);
+                return;
+            }
+
+            participant.IsModerator = isModerator;
+            await context.SaveChangesAsync();
+
+            logger.LogDebug($"Exiting {nameof(SetParticipantIsModerator)}.");
+            return;
+        }
+
         //
         // DELETE
         //
@@ -509,7 +555,6 @@ namespace Flush.Database.EntityFrameworkCore
             }
 
             var sessionQuery = context.Sessions
-                .Include(s => s.Room)
                 .Where(s => s.Room.RoomUniqueId == roomUniqueId)
                 .Where(s => s.EndDateTime == null);
             logger.LogDebug($"{sessionQuery.ToQueryString()}");

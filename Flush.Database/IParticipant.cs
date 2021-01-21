@@ -6,5 +6,6 @@ namespace Flush.Database
         public string ParticipantUniqueId { get; }
         public DateTime? LastSeenDateTime { get; }
         public int? LastVote { get; }
+        public bool IsModerator { get; }
     }
 }

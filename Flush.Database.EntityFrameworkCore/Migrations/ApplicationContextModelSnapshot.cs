@@ -3,6 +3,7 @@ using System;
 using Flush.Database.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Flush.Database.EntityFrameworkCore.Migrations
@@ -14,41 +15,82 @@ namespace Flush.Database.EntityFrameworkCore.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "5.0.1");
+                .UseIdentityColumns()
+                .HasAnnotation("Relational:MaxIdentifierLength", 128)
+                .HasAnnotation("ProductVersion", "5.0.2");
+
+            modelBuilder.Entity("Flush.Database.EntityFrameworkCore.Participant", b =>
+                {
+                    b.Property<int>("ParticipantId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
+
+                    b.Property<bool>("IsModerator")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LastSeenDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("LastVote")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SessionId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UniqueUserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ParticipantId");
+
+                    b.HasIndex("SessionId");
+
+                    b.HasIndex("UniqueUserId");
+
+                    b.ToTable("Participants");
+                });
 
             modelBuilder.Entity("Flush.Database.EntityFrameworkCore.Room", b =>
                 {
                     b.Property<int>("RoomId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Owner")
+                    b.Property<string>("OwnerUniqueId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RoomUniqueId")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("RoomId");
 
-                    b.ToTable("Room");
+                    b.ToTable("Rooms");
                 });
 
             modelBuilder.Entity("Flush.Database.EntityFrameworkCore.Session", b =>
                 {
                     b.Property<int>("SessionId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
 
                     b.Property<DateTime?>("EndDateTime")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Phase")
+                        .HasColumnType("int");
 
                     b.Property<int>("RoomId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("StartDateTime")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("datetime2");
 
                     b.HasKey("SessionId");
 
@@ -57,29 +99,38 @@ namespace Flush.Database.EntityFrameworkCore.Migrations
                     b.ToTable("Sessions");
                 });
 
-            modelBuilder.Entity("Flush.Database.EntityFrameworkCore.Trace", b =>
+            modelBuilder.Entity("Flush.Database.EntityFrameworkCore.UniqueUser", b =>
                 {
-                    b.Property<int>("TraceId")
+                    b.Property<int>("UniqueUserId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
 
-                    b.Property<int>("Event")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("RaisedBy")
-                        .HasColumnType("TEXT");
+                    b.HasKey("UniqueUserId");
 
-                    b.Property<int>("SessionId")
-                        .HasColumnType("INTEGER");
+                    b.ToTable("UniqueUsers");
+                });
 
-                    b.Property<DateTime>("Timestamp")
-                        .HasColumnType("TEXT");
+            modelBuilder.Entity("Flush.Database.EntityFrameworkCore.Participant", b =>
+                {
+                    b.HasOne("Flush.Database.EntityFrameworkCore.Session", "Session")
+                        .WithMany("Participants")
+                        .HasForeignKey("SessionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.HasKey("TraceId");
+                    b.HasOne("Flush.Database.EntityFrameworkCore.UniqueUser", "UniqueUser")
+                        .WithMany("Participants")
+                        .HasForeignKey("UniqueUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.HasIndex("SessionId");
+                    b.Navigation("Session");
 
-                    b.ToTable("Traces");
+                    b.Navigation("UniqueUser");
                 });
 
             modelBuilder.Entity("Flush.Database.EntityFrameworkCore.Session", b =>
@@ -93,17 +144,6 @@ namespace Flush.Database.EntityFrameworkCore.Migrations
                     b.Navigation("Room");
                 });
 
-            modelBuilder.Entity("Flush.Database.EntityFrameworkCore.Trace", b =>
-                {
-                    b.HasOne("Flush.Database.EntityFrameworkCore.Session", "Session")
-                        .WithMany("Traces")
-                        .HasForeignKey("SessionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Session");
-                });
-
             modelBuilder.Entity("Flush.Database.EntityFrameworkCore.Room", b =>
                 {
                     b.Navigation("Sessions");
@@ -111,7 +151,12 @@ namespace Flush.Database.EntityFrameworkCore.Migrations
 
             modelBuilder.Entity("Flush.Database.EntityFrameworkCore.Session", b =>
                 {
-                    b.Navigation("Traces");
+                    b.Navigation("Participants");
+                });
+
+            modelBuilder.Entity("Flush.Database.EntityFrameworkCore.UniqueUser", b =>
+                {
+                    b.Navigation("Participants");
                 });
 #pragma warning restore 612, 618
         }

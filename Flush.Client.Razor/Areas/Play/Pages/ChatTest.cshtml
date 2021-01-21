@@ -1,0 +1,58 @@
+﻿@page
+<div class="row">
+    <div class="col-4">
+        <form id="account" method="post">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="form-group">
+                <label>My Name</label>
+                <input id="myName" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label>My Message</label>
+                <input id="myMessage" class="form-control" />
+            </div>
+            <div class="form-group d-flex justify-content-center">
+                <button type="submit" asp-page-handler="AcquireToken" class="btn">Send</button>
+            </div>
+        </form>
+    </div>
+    <div class="col-8">
+        <ul id="messageList">
+        </ul>
+    </div>
+</div>
+<script src="~/js/signalr/dist/browser/signalr.js"></script>
+<script>
+    /* chat functionality */
+    $(document).ready(function () {
+        const messages = $('#messagelist')
+
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl('/ws/chathub')
+            .withAutomaticReconnect()
+            .build();
+
+        connection.on('ReceiveMessage', function (chatMessage) {
+            const html = `<li>${chatMessage.message}</li>`
+            messages.append(html);
+        });
+
+        $('#messaging').on('submit', function (e) {
+            e.preventDefault();
+            const message = $('#myMessage');
+            if (message.text().length > 0) {
+                /* Flush 0.5
+                 * Messages are posted to server.
+                 * Responses are received over sockets.
+                 */
+                $.post(`https://${window.location.hostname}/api/v2/chat`, {
+                    Message: message.text()
+                }, function (data) {
+                    console.log(data)
+                });
+            }
+        });
+
+        connection.start().catch(console.error)
+    });
+</script>

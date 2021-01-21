@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Flush.Database.EntityFrameworkCore
 {
@@ -8,14 +7,20 @@ namespace Flush.Database.EntityFrameworkCore
     {
         public int ParticipantId { get; set; }
 
-        [Required]
-        public string ParticipantUniqueId { get; set; }
+        [NotMapped] public string ParticipantUniqueId => UniqueUser.ApplicationUserId;
 
         public DateTime? LastSeenDateTime { get; set; }
 
         public int? LastVote { get; set; }
 
-        // Many-to-Many with Sessions
-        public IEnumerable<SessionParticipant> ParticipantSessions { get; set; }
+        public bool IsModerator { get; set; }
+
+        // One participant has One session.
+        public int SessionId { get; set; }
+        public Session Session { get; set; }
+
+        // One participant has One unique user.
+        public int UniqueUserId { get; set; }
+        public UniqueUser UniqueUser { get; set; }
     }
 }

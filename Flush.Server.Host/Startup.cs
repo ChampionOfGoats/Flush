@@ -1,15 +1,14 @@
 using System;
+using Flush.Authentication.AspNetCoreIdentity;
 using Flush.Configuration;
 using Flush.Contracts;
 using Flush.Database.EntityFrameworkCore;
 using Flush.Server.Hubs;
 using Flush.Server.Services;
 using Flush.Tracing;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -47,24 +46,8 @@ namespace Flush.Server.Host
             // Add Application EFCore backing components.
             services.AddApplicationDatabaseEFCore();
 
-            // Add Identity.
-            services.AddDbContext<IdentityContext>();
-            var identityBuilder = services.AddIdentity<ApplicationUser, IdentityRole>();
-            identityBuilder.AddEntityFrameworkStores<IdentityContext>();
-
-            // Add authentication proxy.
-            services.AddScoped<IAuthenticationServiceProxy, AspNetCoreIdentityAuthenticationServiceProxy>();
-
-            // Add Authentication.
-            var authenticationBuilder = services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.RequireAuthenticatedSignIn = false;
-            });
-            authenticationBuilder.AddCookie(options =>
-            {
-            });
+            // Add AspNetCore Identity authentication
+            services.AddAspNetCoreIdentityAuthentication();
 
             // Add tracing.
             services.AddScoped<ITracer, Tracer>();

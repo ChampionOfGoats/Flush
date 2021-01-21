@@ -6,7 +6,7 @@ usage ()
     -h | --help     display this message"
 }
 
-appsettings="Flush/appsettings.json"
+appsettings="Flush.Client.Razor/appsettings.json"
 
 while [[ "$1" ]]
 do
@@ -19,7 +19,7 @@ do
     shift
 done
 
-for id in flush identity jwt
+for id in flush identity
 do
     searchstring="$id"_key
     key=$(hexdump -n 256 -e '"%08X"' /dev/random)

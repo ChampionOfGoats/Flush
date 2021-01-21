@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Security;
 using System.Threading.Tasks;
 
 namespace Flush.Database
@@ -35,6 +34,7 @@ namespace Flush.Database
         Task SetRoomOwner(string roomUniqueId, string applicationUserUniqueId);
         Task SetParticipantLastSeen(string roomUniqueId, string applicationUserUniqueId);
         Task SetParticipantLastVote(string roomUniqueId, string applicationUserUniqueId, int vote);
+        Task SetParticipantIsModerator(string roomUniqueId, string applicationUserUniqueId, bool isModerator);
 
         //
         // DELETE

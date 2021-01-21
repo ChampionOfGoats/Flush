@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Flush.Database.EntityFrameworkCore
 {
@@ -9,11 +10,15 @@ namespace Flush.Database.EntityFrameworkCore
 
         [Required] public string RoomUniqueId { get; set; }
 
-        public string OwnerUniqueId { get; set; }
+        [NotMapped] public string OwnerUniqueId => UniqueUser.ApplicationUserId;
 
         [Required] public string Name { get; set; }
 
-        // One-to-Many with Sessions
+        // One room has Many sessions.
         public ICollection<Session> Sessions { get; set; }
+
+        // One room may have One unique user.
+        public int? UniqueUserId { get; set; }
+        public UniqueUser UniqueUser { get; set; }
     }
 }

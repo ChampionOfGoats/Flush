@@ -108,7 +108,7 @@ namespace Flush.Server.Controllers
                 return badRequest;
             }
 
-            // Todo: change internal moderator state.
+            await applicationDatabaseProxy.SetParticipantIsModerator(currentUser.RoomUniqueId, currentUser.UniqueId, changeRoleRequest.IsModerator);
             var roleChangedResponse = new RoleChangedResponse
             {
                 PlayerId = currentUser.UniqueId,

@@ -23,6 +23,7 @@ namespace Flush.Server.Controllers
 
         private readonly ILogger<ChatController> logger;
         private readonly IHubContext<ChatHub, IChatClient> hubContext;
+        private readonly ICurrentUser currentUser;
 
         /// <summary>
         /// Create a new instance of the ChatController.
@@ -30,12 +31,14 @@ namespace Flush.Server.Controllers
         /// <param name="logger">The logger.</param>
         /// <param name="hubContext">A ChatHub context.</param>
         public ChatController(ILogger<ChatController> logger,
-            IHubContext<ChatHub, IChatClient> hubContext)
+            IHubContext<ChatHub, IChatClient> hubContext,
+            ICurrentUser currentUser)
         {
             logger.LogInformation($"Initialising {nameof(ChatController)}.");
 
             this.logger = logger;
             this.hubContext = hubContext;
+            this.currentUser = currentUser;
         }
 
         /// <summary>
@@ -66,6 +69,8 @@ namespace Flush.Server.Controllers
                 return BadRequest();
             }
 
+            // Set the username for return.
+            chatMessage.User = currentUser.DisplayName;
             await hubContext.Clients.All.ReceiveMessage(chatMessage);
 
             logger.LogDebug($"Exiting {nameof(SendMessage)}.");

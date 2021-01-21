@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Flush.Authentication;
 using Flush.Contracts;
 using Flush.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -58,8 +59,8 @@ namespace Flush.Server.Controllers
                 new Claim("room", signInRequest.Room)
             };
 
-            return await authenticationServiceProxy.SignIn(
-                new ClaimsPrincipal(new ClaimsIdentity(claims)));
+            var userInfo = await authenticationServiceProxy.SignIn(new SignInCredentials());
+            return userInfo is not null ? Ok() : BadRequest();
         }
 
         [HttpGet]
@@ -92,7 +93,7 @@ namespace Flush.Server.Controllers
             }
 
             // Cannot sign-out a user that does not exist.
-            var validUser = authenticationServiceProxy.GetExistingUser(string.Empty);
+            var validUser = authenticationServiceProxy.GetUserByName(currentUser.DisplayName);
             if (validUser is null)
             {
                 await Task.CompletedTask;

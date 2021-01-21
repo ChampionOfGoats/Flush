@@ -1,6 +1,4 @@
-﻿using System;
-using Flush.Server.Services;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 
 namespace Flush.Server
 {
@@ -16,9 +14,7 @@ namespace Flush.Server
         public static IServiceCollection AddApplicationServer(
             this IServiceCollection services)
         {
-            services.AddScoped<IAuthenticationServiceProxy, AspNetCoreIdentityAuthenticationServiceProxy>()
-                .AddDbContext<IdentityContext>(ServiceLifetime.Scoped)
-                .AddControllers();
+            services.AddControllers();
             return services;
         }
     }
