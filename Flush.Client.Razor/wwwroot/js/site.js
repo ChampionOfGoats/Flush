@@ -167,7 +167,6 @@ $(document).ready(function () {
             $('#results-tab').click();
         }
 
-        //
         currentPhase = playerConnectedRequiresGameStateResponse.phase;
 
         document.getElementById("leaveRoomButton").disabled = false;
@@ -176,51 +175,51 @@ $(document).ready(function () {
     });
 
     /* Received when a vote is cast. */
-    connection.on("PlayerVoted", function (sendVoteResponse) {
-        var id = `#status-${sendVoteResponse.playerID}`;
+    connection.on("ReceiveVote", function (receiveVoteResponse) {
+        var id = `#status-${receiveVoteResponse.playerID}`;
         $(id).addClass('voted');
     });
 
-    /* Received when a moderator instructs a reveal. */
-    connection.on("StartDiscussionPhase", function (sendResultResponse) {
-        currentPhase = PHASE.Results;
+    /* Received when a moderator forces a transition */
+    connection.on("Transition", function (transitionResponse) {
+        if (transitionResponse.type == 0) {
+            currentPhase = PHASE.Results;
 
-        var votesNum = mapVotesToCountAndSetDisplay(sendResultResponse.votes);
-        var ctx = document.getElementById('resultsChart').getContext('2d');
-        if (myChart === undefined) {
-            myChart = createChart(ctx, votesNum);
+            var votesNum = mapVotesToCountAndSetDisplay(transitionResponse.votes);
+            var ctx = document.getElementById('resultsChart').getContext('2d');
+            if (myChart === undefined) {
+                myChart = createChart(ctx, votesNum);
+            } else {
+                myChart.data.datasets[0].data = votesNum;
+                myChart.update();
+            }
+
+            $('.player-icon[data-vote]').addClass('display-vote');
+            $('#votes-card').html(transitionResponse.votes.length);
+            $('#min-card').html(labels[transitionResponse.low]);
+            $('#max-card').html(labels[transitionResponse.high]);
+            $('#mode-card').html(labels[transitionResponse.mode]);
+
+            /* switch to results tab. */
+            $('#results-tab').click();
+        } else if (transitionRespone.type == 1) {
+            currentPhase = PHASE.Voting;
+            $('.vote').removeClass('active');
+            $('.vote').removeClass('focus');
+            $('.player-icon').removeClass('voted');
+            $('.player-icon').removeClass('display-vote');
+            $('.player-icon').attr("data-vote", null);
+            $('#vote-tab').click();
         } else {
-            myChart.data.datasets[0].data = votesNum;
-            myChart.update();
+            console.error("unexpected transition code encountered.");
         }
-
-        $('.player-icon[data-vote]').addClass('display-vote');
-        $('#votes-card').html(sendResultResponse.votes.length);
-        $('#min-card').html(labels[sendResultResponse.low]);
-        $('#max-card').html(labels[sendResultResponse.high]);
-        $('#mode-card').html(labels[sendResultResponse.mode]);
-
-        /* switch to results tab. */
-        $('#results-tab').click();
     });
 
-    /* Received when a moderator instructs a reset. */
-    connection.on("StartVotingPhase", function (beginVotingResponse) {
-        currentPhase = PHASE.Voting;
-        $('.vote').removeClass('active');
-        $('.vote').removeClass('focus');
-        $('.player-icon').removeClass('voted');
-        $('.player-icon').removeClass('display-vote');
-        $('.player-icon').attr("data-vote", null);
-        $('#vote-tab').click();
-    });
+    /* Received when a player toggles the mod/obs status. */
+    connection.on("RoleChanged", function (roleChangedResponse) {
+        var id = `#status-${roleChangedResponse.playerID}`;
 
-    /* Received when a player toggles the observer status. */
-    connection.on("PlayerChanged", function (sendPlayerChangedResponse) {
-        var id = `#status-${sendPlayerChangedResponse.playerID}`;
-
-        sendPlayerChangedResponse.isObserver ? $(id).addClass('observer') : $(id).removeClass('observer');
-        sendPlayerChangedResponse.isModerator ? $(id).addClass('moderator') : $(id).removeClass('moderator');
+        roleChangedResponse.isModerator ? $(id).addClass('moderator') : $(id).removeClass('moderator');
     });
 
     /*
@@ -229,59 +228,75 @@ $(document).ready(function () {
 
     /* Attempts to issue a vote. */
     $('.vote').click(function (event) {
+        event.preventDefault();
+
         $('.vote').removeClass('active');
         $(this).addClass('active');
 
-        connection.invoke("SendVote", {
-            Vote: $(this).attr('data-value')
-        }).catch(function (err) {
-            return console.error(err.toString());
+        $.ajax({
+            url: `${window.location.protocol}//${window.location.host}/api/v2/session/vote`,
+            type: 'POST',
+            data: JSON.stringify({
+                Vote: $(this).attr('data-value')
+            }),
+            dataType: 'json',
+            success: function (data) {
+                console.log(data);
+            }
         });
-        event.preventDefault();
     });
 
     /* Issues a request for all participants to be shown the votes. */
     $('#revealVote').click(function (event) {
-        connection.invoke("SendResult", { }).catch(function (err) {
-            return console.error(err.toString());
+        event.preventDefault();
+
+        $.ajax({
+            url: `${window.location.protocol}//${window.location.host}/api/v2/session/transition`,
+            type: 'POST',
+            data: JSON.stringify({
+                Type: 0
+            }),
+            dataType: 'json',
+            success: function (data) {
+                console.log(data);
+            }
         });
     });
 
     /* Issues a request for all participants to reset their vote. */
     $('#resetVote').click(function (event) {
-        connection.invoke("BeginVoting", { }).catch(function (err) {
-            return console.error(err.toString());
-        });
         event.preventDefault();
+
+        $.ajax({
+            url: `${window.location.protocol}//${window.location.host}/api/v2/session/transition`,
+            type: 'POST',
+            data: JSON.stringify({
+                Type: 1
+            }),
+            dataType: 'json',
+            success: function (data) {
+                console.log(data);
+            }
+        });
     });
 
     /* Inform the server that this player is now a/not a moderator. */
     $('#playerIsModerator').change(function () {
+        event.preventDefault();
+
         this.checked ? $("#playareamain").addClass("moderator") : $("#playareamain").removeClass("moderator");
-        connection.invoke("SendPlayerChange", {
-            Observer: null,
-            Moderator: this.checked
-        }).catch(function (err) {
-            return console.error(err.toString());
-        });
-        event.preventDefault();
-    });
 
-    /* Inform the server that this player is now an/not an observer. */
-    $('#playerIsObserver').change(function () {
-        connection.invoke("SendPlayerChange", {
-            Observer: this.checked,
-            Moderator: null
-        }).catch(function (err) {
-            return console.error(err.toString());
+        $.ajax({
+            url: `${window.location.protocol}//${window.location.host}/api/v2/session/changerole`,
+            type: 'POST',
+            data: JSON.stringify({
+                IsModerator: this.checked
+            }),
+            dataType: 'json',
+            success: function (data) {
+                console.log(data);
+            }
         });
-        event.preventDefault();
-    });
-
-    /* Return to home page. */
-    $('#relogButton').click(function () {
-        var url = `${window.location.protocol}//${window.location.host}/`;
-        window.location = url;
     });
 });
 

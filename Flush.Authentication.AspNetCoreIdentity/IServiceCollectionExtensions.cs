@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 
 namespace Flush.Authentication.AspNetCoreIdentity
 {
@@ -30,6 +31,12 @@ namespace Flush.Authentication.AspNetCoreIdentity
             });
 
             // Set cookie options.
+            services.ConfigureApplicationCookie(options =>
+            {
+                options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
+                options.LoginPath = "/Auth/Login";
+                //options.SlidingExpiration = true;
+            });
 
             // Add the authentication proxy.
             services.AddScoped<IAuthenticationServiceProxy, AspNetCoreIdentityAuthenticationServiceProxy>();

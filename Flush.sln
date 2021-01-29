@@ -1,5 +1,7 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30907.101
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{AF2D3A93-9D0F-48A5-9D72-48DFBB576F4E}"
 	ProjectSection(SolutionItems) = preProject
 		docker-compose.yml = docker-compose.yml
@@ -9,33 +11,33 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flush.Database.EntityFrameworkCore", "Flush.Database.EntityFrameworkCore\Flush.Database.EntityFrameworkCore.csproj", "{32A4E190-3DA3-40F8-94D8-F4F91E99C9C4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Flush.Database.EntityFrameworkCore", "Flush.Database.EntityFrameworkCore\Flush.Database.EntityFrameworkCore.csproj", "{32A4E190-3DA3-40F8-94D8-F4F91E99C9C4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flush.Server", "Flush.Server\Flush.Server.csproj", "{D2F8EAE6-F7CD-4AC5-AFF7-766B115317EF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Flush.Server", "Flush.Server\Flush.Server.csproj", "{D2F8EAE6-F7CD-4AC5-AFF7-766B115317EF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flush.Client.BlazorWasm", "Flush.Client.BlazorWasm\Flush.Client.BlazorWasm.csproj", "{66F3DDC4-2D0D-42B4-90C1-36B64172609B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Flush.Client.BlazorWasm", "Flush.Client.BlazorWasm\Flush.Client.BlazorWasm.csproj", "{66F3DDC4-2D0D-42B4-90C1-36B64172609B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flush.Database", "Flush.Database\Flush.Database.csproj", "{8C4FE70F-08A0-4175-A1F1-5364A98859FE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Flush.Database", "Flush.Database\Flush.Database.csproj", "{8C4FE70F-08A0-4175-A1F1-5364A98859FE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flush.Shared", "Flush.Shared\Flush.Shared.csproj", "{AA5F7E66-32AD-40B5-9CE4-316D60271818}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Flush.Shared", "Flush.Shared\Flush.Shared.csproj", "{AA5F7E66-32AD-40B5-9CE4-316D60271818}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flush.Server.Host", "Flush.Server.Host\Flush.Server.Host.csproj", "{E5D702B6-6175-444B-9BCD-F43CB9886886}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Flush.Server.Host", "Flush.Server.Host\Flush.Server.Host.csproj", "{E5D702B6-6175-444B-9BCD-F43CB9886886}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flush.Tracing", "Flush.Tracing\Flush.Tracing.csproj", "{1EBFA99C-344B-441E-B179-E0443A588735}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Flush.Tracing", "Flush.Tracing\Flush.Tracing.csproj", "{1EBFA99C-344B-441E-B179-E0443A588735}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flush.Configuration", "Flush.Configuration\Flush.Configuration.csproj", "{307B348F-C0F9-4A57-9366-D0BD0668618B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Flush.Configuration", "Flush.Configuration\Flush.Configuration.csproj", "{307B348F-C0F9-4A57-9366-D0BD0668618B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flush.BlazorUtils", "Flush.BlazorUtils\Flush.BlazorUtils.csproj", "{0409DF5A-7348-423A-83AA-46C80A740A41}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Flush.BlazorUtils", "Flush.BlazorUtils\Flush.BlazorUtils.csproj", "{0409DF5A-7348-423A-83AA-46C80A740A41}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flush.Database.EntityFrameworkCore.SqlTestApp", "Flush.Database.EntityFrameworkCore.SqlTestApp\Flush.Database.EntityFrameworkCore.SqlTestApp.csproj", "{F5ABF74A-8D13-44DD-A52B-59E5CD8EDA4D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Flush.Database.EntityFrameworkCore.SqlTestApp", "Flush.Database.EntityFrameworkCore.SqlTestApp\Flush.Database.EntityFrameworkCore.SqlTestApp.csproj", "{F5ABF74A-8D13-44DD-A52B-59E5CD8EDA4D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flush.Client.Razor", "Flush.Client.Razor\Flush.Client.Razor.csproj", "{2D694B2A-2FE6-4EF4-AFA5-C38FFDA7A892}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Flush.Client.Razor", "Flush.Client.Razor\Flush.Client.Razor.csproj", "{2D694B2A-2FE6-4EF4-AFA5-C38FFDA7A892}"
 EndProject
 Project("{9344BDBB-3E7F-41FC-A0DD-8665D75EE146}") = "Flush.Server.Test", "Flush.Server.Test\Flush.Server.Test.csproj", "{E0D9449C-C1FE-4408-866E-5834FD6D68C3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flush.Authentication", "Flush.Authentication\Flush.Authentication.csproj", "{8FCAED96-A7CB-411F-907C-C8759D7E732E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Flush.Authentication", "Flush.Authentication\Flush.Authentication.csproj", "{8FCAED96-A7CB-411F-907C-C8759D7E732E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flush.Authentication.AspNetCoreIdentity", "Flush.Authentication.AspNetCoreIdentity\Flush.Authentication.AspNetCoreIdentity.csproj", "{1966DB2B-35ED-466D-B8C1-6676B7637633}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Flush.Authentication.AspNetCoreIdentity", "Flush.Authentication.AspNetCoreIdentity\Flush.Authentication.AspNetCoreIdentity.csproj", "{1966DB2B-35ED-466D-B8C1-6676B7637633}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -43,10 +45,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{E935B3F0-8B16-414B-A925-CE2CF9D4C8A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E935B3F0-8B16-414B-A925-CE2CF9D4C8A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E935B3F0-8B16-414B-A925-CE2CF9D4C8A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E935B3F0-8B16-414B-A925-CE2CF9D4C8A7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{32A4E190-3DA3-40F8-94D8-F4F91E99C9C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{32A4E190-3DA3-40F8-94D8-F4F91E99C9C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{32A4E190-3DA3-40F8-94D8-F4F91E99C9C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -104,6 +102,12 @@ Global
 		{1966DB2B-35ED-466D-B8C1-6676B7637633}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1966DB2B-35ED-466D-B8C1-6676B7637633}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C0A5047A-6791-41A1-AC00-8F1C37D88A7E}
+	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		version = 0.1.0
 		Policies = $0
@@ -116,7 +120,5 @@ Global
 		$3.scope = text/x-csharp
 		$0.VersionControlPolicy = $4
 		$0.StandardHeader = $5
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection
 EndGlobal

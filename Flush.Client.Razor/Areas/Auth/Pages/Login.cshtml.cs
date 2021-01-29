@@ -149,7 +149,7 @@ namespace Flush.Client.Razor.Areas.Auth.Pages
                 }
 
                 // Everything good? Let's go!
-                return RedirectToPage("/ChatTest", new { area = "Play" });
+                return RedirectToPage("/Standard", new { area = "Play" });
             }
 
             // If we got this far, something failed, redisplay form
