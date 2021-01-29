@@ -93,7 +93,7 @@ namespace Flush.Server.Controllers
             }
 
             // Cannot sign-out a user that does not exist.
-            var validUser = authenticationServiceProxy.GetUserByName(currentUser.DisplayName);
+            var validUser = authenticationServiceProxy.GetUserByEmail(currentUser.DisplayName);
             if (validUser is null)
             {
                 await Task.CompletedTask;

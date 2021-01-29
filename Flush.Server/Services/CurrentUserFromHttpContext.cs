@@ -17,7 +17,8 @@ namespace Flush.Server.Services
 
         /// <inheritdoc/>
         public string DisplayName =>
-            context.HttpContext.User?.FindFirst(ClaimType.FullName.Description()).Value;
+            // TODO: Needs to use full name claim (not set yet)
+            context.HttpContext.User?.FindFirst(ClaimType.FirstName.Description()).Value;
 
         /// <inheritdoc/>
         public string UniqueId =>

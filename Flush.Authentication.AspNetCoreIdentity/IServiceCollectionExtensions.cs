@@ -26,15 +26,10 @@ namespace Flush.Authentication.AspNetCoreIdentity
             // Add Authentication.
             var authenticationBuilder = services.AddAuthentication(options =>
             {
-                options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.RequireAuthenticatedSignIn = false;
             });
 
             // Set cookie options.
-            authenticationBuilder.AddCookie(options =>
-            {
-            });
 
             // Add the authentication proxy.
             services.AddScoped<IAuthenticationServiceProxy, AspNetCoreIdentityAuthenticationServiceProxy>();

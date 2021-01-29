@@ -12,7 +12,7 @@
                 <input id="myMessage" class="form-control" />
             </div>
             <div class="form-group d-flex justify-content-center">
-                <button type="submit" asp-page-handler="AcquireToken" class="btn">Send</button>
+                <button id="sendMessage" type="button"class="btn">Send</button>
             </div>
         </form>
     </div>
@@ -21,12 +21,15 @@
         </ul>
     </div>
 </div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
+<script src="https://kit.fontawesome.com/50326a7491.js" crossorigin="anonymous"></script>
 <script src="~/js/signalr/dist/browser/signalr.js"></script>
 <script>
     /* chat functionality */
     $(document).ready(function () {
-        const messages = $('#messagelist')
-
         const connection = new signalR.HubConnectionBuilder()
             .withUrl('/ws/chathub')
             .withAutomaticReconnect()
@@ -34,21 +37,32 @@
 
         connection.on('ReceiveMessage', function (chatMessage) {
             const html = `<li>${chatMessage.message}</li>`
-            messages.append(html);
+            $('#messageList').append(html);
         });
 
-        $('#messaging').on('submit', function (e) {
+        $('#sendMessage').on('click', function (e) {
             e.preventDefault();
-            const message = $('#myMessage');
-            if (message.text().length > 0) {
+            const message = $('#myMessage')[0];
+            console.log(message.value);
+            if (message.value.length > 0) {
                 /* Flush 0.5
                  * Messages are posted to server.
                  * Responses are received over sockets.
-                 */
-                $.post(`https://${window.location.hostname}/api/v2/chat`, {
-                    Message: message.text()
+                 
+                $.post(`${window.location.protocol}//${window.location.host}/api/v2/chat`, {
+                    Message: message.value
                 }, function (data) {
                     console.log(data)
+                }, "application/json");*/
+                $.ajax({
+                    url: `${window.location.protocol}//${window.location.host}/api/v2/chat`,
+                    type: 'POST',
+                    data: JSON.stringify({ Message: message.value }),
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    success: function (data) {
+                        console.log(data);
+                    }
                 });
             }
         });

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Flush.Extensions;
@@ -15,8 +16,6 @@ namespace Flush.Authentication.AspNetCoreIdentity
     internal sealed class AspNetCoreIdentityAuthenticationServiceProxy
         : IAuthenticationServiceProxy
     {
-        private static readonly OkResult ok = new OkResult();
-
         private readonly ILogger<AspNetCoreIdentityAuthenticationServiceProxy> logger;
         private readonly UserManager<ApplicationUser> userManager;
         private readonly SignInManager<ApplicationUser> signInManager;
@@ -42,15 +41,18 @@ namespace Flush.Authentication.AspNetCoreIdentity
         }
 
         /// <inheritdoc/>
-        public async Task<UserInfo> GetUserByEmail(string emailAddress)
+        public async Task<UserInfo> GetUserByEmail(string emailAddress, bool ignoreNull = false)
         {
             logger.LogDebug($"Entering {nameof(GetUserByEmail)}.");
 
             var applicationUser = await userManager.FindByEmailAsync(emailAddress);
             if (applicationUser is null)
             {
-                var exception = new NullReferenceException(nameof(applicationUser));
-                logger.LogErrorAndThrow(exception);
+                if (!ignoreNull)
+                {
+                    var exception = new NullReferenceException(nameof(applicationUser));
+                    logger.LogErrorAndThrow(exception);
+                }
                 return null;
             }
 
@@ -58,7 +60,7 @@ namespace Flush.Authentication.AspNetCoreIdentity
             return new UserInfo
             {
                 UniqueId = applicationUser.Id,
-                DisplayName = $"{applicationUser.FirstName} {applicationUser.LastName}"
+                DisplayName = $"{applicationUser.FirstName} {applicationUser.LastName}" 
             };
         }
 
@@ -76,12 +78,15 @@ namespace Flush.Authentication.AspNetCoreIdentity
             }
 
             var canSignInResult = CanSignInResult.Success;
+            /* TODO: This is wrong. It creates a principal and for some reason they're automatically signed in.
+             * The implementation of IsSignedIn seems to suggest the mere presence of a cookie identity qualifies.
             var claimsPrincipal = await signInManager.CreateUserPrincipalAsync(applicationUser);
             if (signInManager.IsSignedIn(claimsPrincipal))
             {
                 canSignInResult = CanSignInResult.SignedIn;
             }
-            else if (applicationUser.LockoutEnabled && applicationUser.LockoutEnd > DateTime.UtcNow)
+            */
+            if (applicationUser.LockoutEnabled && applicationUser.LockoutEnd > DateTime.UtcNow)
             {
                 canSignInResult = CanSignInResult.LockedOut;
             }
@@ -91,13 +96,41 @@ namespace Flush.Authentication.AspNetCoreIdentity
         }
 
         /// <inheritdoc/>
-        public Task<UserInfo> RegisterUser(RegistrationData registrationData)
+        public async Task<UserInfo> RegisterUser(RegistrationData registrationData)
         {
             logger.LogDebug($"Entering {nameof(RegisterUser)}.");
 
-            throw new NotImplementedException();
+            var applicationUser = await userManager.FindByEmailAsync(registrationData.Email);
+            if (applicationUser is not null)
+            {
+                var exception = new InvalidOperationException(nameof(applicationUser));
+                logger.LogErrorAndThrow(exception);
+                return null;
+            }
+
+            var nameSplit = registrationData.Name.Split(" ");
+            var identityResult = await userManager.CreateAsync(new ApplicationUser
+            {
+                FirstName = nameSplit.First(),
+                LastName = string.Join(" ", nameSplit.TakeLast(nameSplit.Length - 1)),
+                Email = registrationData.Email,
+                UserName = registrationData.Username
+            }, registrationData.Password);
+            if (!identityResult.Succeeded)
+            {
+                var exception = new InvalidOperationException(nameof(identityResult));
+                logger.LogErrorAndThrow(exception);
+                return null;
+            }
+
+            applicationUser = userManager.FindByEmailAsync(registrationData.Email).GetAwaiter().GetResult();
 
             logger.LogDebug($"Exiting {nameof(RegisterUser)}.");
+            return new UserInfo
+            {
+                UniqueId = applicationUser.Id,
+                DisplayName = $"{applicationUser.FirstName} {applicationUser.LastName}"
+            };
         }
 
         /// <inheritdoc/>
@@ -121,6 +154,7 @@ namespace Flush.Authentication.AspNetCoreIdentity
             }
 
             // generate claims.
+            // TODO: Room unique ID
             var claims = new Claim[]
             {
                 new Claim(ClaimType.UserIdentifier.Description(), applicationUser.Id),

@@ -90,7 +90,7 @@ namespace Flush.Client.Razor.Areas.Auth.Pages
                 var authenticationServiceProxy =
                     services.GetService(typeof(IAuthenticationServiceProxy)) as IAuthenticationServiceProxy;
 
-                var userInfo = await authenticationServiceProxy.GetUserByEmail(emailAddress);
+                var userInfo = await authenticationServiceProxy.GetUserByEmail(emailAddress, true);
                 if (userInfo is null)
                 {
                     // Need to register a new user as they don't already exist
@@ -140,16 +140,16 @@ namespace Flush.Client.Razor.Areas.Auth.Pages
                 }
 
                 // ... and should match the earlier one.
-                if (userInfo2 != userInfo)
+                if (!userInfo2.Equals(userInfo))
                 {
                     await authenticationServiceProxy.SignOut();
-                    await authenticationServiceProxy.RemoveUser(userInfo);
+                    //await authenticationServiceProxy.RemoveUser(userInfo);
                     ModelState.AddModelError(string.Empty, "The signed in user didn't match who we expected.");
                     return Page();
                 }
 
                 // Everything good? Let's go!
-                return RedirectToPage("/Standard", new { area = "Play" });
+                return RedirectToPage("/ChatTest", new { area = "Play" });
             }
 
             // If we got this far, something failed, redisplay form

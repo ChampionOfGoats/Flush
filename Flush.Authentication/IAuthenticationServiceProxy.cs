@@ -12,7 +12,7 @@ namespace Flush.Authentication
         /// </summary>
         /// <param name="userName">The email address.</param>
         /// <returns>The ID of the user.</returns>
-        Task<UserInfo> GetUserByEmail(string emailAddress);
+        Task<UserInfo> GetUserByEmail(string emailAddress, bool ignoreNull = false);
 
         /// <summary>
         /// Register a new user.
