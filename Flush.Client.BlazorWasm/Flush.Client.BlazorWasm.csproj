@@ -30,4 +30,16 @@
       <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Shared\Components\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="site.css" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="site.css">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
 </Project>

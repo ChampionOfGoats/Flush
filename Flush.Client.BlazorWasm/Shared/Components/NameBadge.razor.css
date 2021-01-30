@@ -1,0 +1,166 @@
+﻿:root {
+    --moderator: darkcyan;
+    --observer: darkorchid;
+    --voted: lightgreen;
+    --voting: tomato;
+    --voteTextColor: darkgreen;
+}
+
+.name-badge-icon {
+    font-family: "FontAwesome", "Font Awesome 5 Free";
+    font-size: 1rem;
+    line-height: 2rem;
+    min-width: 3rem;
+    min-height: 3rem;
+    position: relative;
+    border-radius: 1.5rem;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+.name-badge-icon:after,
+.name-badge-icon:before {
+    position: absolute;
+    border-radius: .75rem;
+    font-size: .75rem;
+    line-height: 1.5rem;
+    text-align: center;
+    color: white;
+}
+
+.name-badge-icon:before {
+    height: 1.5rem;
+    width: 1.5rem;
+    left: -.5rem;
+    top: -.5rem;
+}
+
+.name-badge-icon:after {
+    content: "";
+    height: 1rem;
+    width: 1rem;
+    right: -.25rem;
+    bottom: -.25rem;
+    background: var(--voting);
+    color: var(--voteTextColor);
+    font-weight: bold;
+    transition-property: width, height, right, bottom;
+    transition-duration: .1s;
+    transition-timing-function: linear;
+}
+
+.name-badge-icon.voted:after,
+.name-badge-icon.display-vote:after {
+    width: 1.5rem;
+    height: 1.5rem;
+    right: -.5rem;
+    bottom: -.5rem;
+}
+
+.name-badge-icon.voted:after {
+    content: "\F00C";
+    background: var(--voted);
+}
+
+.name-badge-icon.display-vote:after {
+    content: attr(data-vote);
+}
+
+.name-badge-icon.moderator:before {
+    content: "\F3ED" !important;
+    background-color: var(--moderator) !important;
+}
+
+.name-badge-icon.disconnected {
+    filter: grayscale(100%);
+}
+
+.name-badge-text {
+    line-height: 3rem;
+    font-size: 1.25rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* avatars
+-------------------------------------------------- */
+.name-badge-icon[data-avatar="1"] {
+    background-image: url("/img/avi/woman1.svg");
+}
+
+.name-badge-icon[data-avatar="2"] {
+    background-image: url("/img/avi/woman2.svg");
+}
+
+.name-badge-icon[data-avatar="3"] {
+    background-image: url("/img/avi/woman3.svg");
+}
+
+.name-badge-icon[data-avatar="4"] {
+    background-image: url("/img/avi/man1.svg");
+}
+
+.name-badge-icon[data-avatar="5"] {
+    background-image: url("/img/avi/man2.svg");
+}
+
+.name-badge-icon[data-avatar="6"] {
+    background-image: url("/img/avi/man3.svg");
+}
+
+.name-badge-icon[data-avatar="7"] {
+    background-image: url("/img/avi/woman4.svg");
+}
+
+.name-badge-icon[data-avatar="8"] {
+    background-image: url("/img/avi/man4.svg");
+}
+
+.name-badge-icon[data-avatar="9"] {
+    background-image: url("/img/avi/man5.svg");
+}
+
+.name-badge-icon[data-avatar="10"] {
+    background-image: url("/img/avi/man6.svg");
+}
+
+.name-badge-icon[data-avatar="11"] {
+    background-image: url("/img/avi/man7.svg");
+}
+
+.name-badge-icon[data-avatar="12"] {
+    background-image: url("/img/avi/man8.svg");
+}
+
+.name-badge-icon[data-avatar="13"] {
+    background-image: url("/img/avi/woman5.svg");
+}
+
+.name-badge-icon[data-avatar="14"] {
+    background-image: url("/img/avi/woman6.svg");
+}
+
+.name-badge-icon[data-avatar="15"] {
+    background-image: url("/img/avi/woman7.svg");
+}
+
+.name-badge-icon[data-avatar="16"] {
+    background-image: url("/img/avi/woman8.svg");
+}
+
+.name-badge-icon[data-avatar="17"] {
+    background-image: url("/img/avi/woman9.svg");
+}
+
+.name-badge-icon[data-avatar="18"] {
+    background-image: url("/img/avi/man9.svg");
+}
+
+.name-badge-icon[data-avatar="19"] {
+    background-image: url("/img/avi/man10.svg");
+}
+
+.name-badge-icon[data-avatar="20"] {
+    background-image: url("/img/avi/woman10.svg");
+}

@@ -1,0 +1,20 @@
+﻿@inherits ComponentBase
+
+<div>
+    @foreach (var nameBadge in NameBadges)
+    {
+        <NameBadge Data="@nameBadge" />
+    }
+</div>
+
+@code
+{
+    private IList<NameBadgeData> NameBadges =
+        new List<NameBadgeData>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        // TODO: Register for player chnnge events
+        await base.OnInitializedAsync();
+    }
+}

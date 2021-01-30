@@ -1,0 +1,38 @@
+﻿@inherits ComponentBase
+
+<div class="row justify-content-md-center mb-4 play-mat" role="group">
+    @foreach (var tile in Tiles)
+    {
+        <PlayMatTile Data="@tile" />
+    }
+</div>
+
+@code
+{
+    [Parameter]
+    public string VotingModel { get; set; }
+
+    private List<PlayMatTileData> Tiles;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await Task.Run(() =>
+        {
+            var typeString = $"{VotingModel}Vote";
+            var resolvedType = GetType().FindOtherInAssembly(typeString);
+            var resolvedValues = Enum.GetValues(resolvedType);
+            var resolvedValuesEnumerated = resolvedValues.GetEnumerator();
+
+            var temp = new List<PlayMatTileData>();
+            while (resolvedValuesEnumerated.MoveNext())
+            {
+                temp.Add(new PlayMatTileData
+                {
+                    Value = $"{(resolvedValuesEnumerated.Current as int?).Value}",
+                    Text = (resolvedValuesEnumerated.Current as Enum).Description()
+                });
+            }
+            Tiles = temp;
+        });
+    }
+}

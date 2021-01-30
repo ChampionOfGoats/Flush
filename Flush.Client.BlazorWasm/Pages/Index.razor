@@ -1,10 +1,38 @@
-﻿@page "/"
+﻿@page "/{roomId:string?}"
 @inject HttpClient Http
+@inject ISessionStorage SessionStorage
+@inject NavigationManager NavigationManager
 
-@code { 
+@code {
+    [Parameter]
+    public string roomId { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
-        // TODO: Redirect to Classic or Join based on cookie presence.
-        await Task.CompletedTask;
+        // TODO: If roomId is set, and the sentinel matches, go to game; if it's set and it doesn't, go to login; if it's not set, and a valid sentinel is present, go to game; else, go to login. The 'verifytoken' response will contain the room guid on success.
+
+        /* 
+         * Due to a bug in Microsoft Edge, we have to be able to ensure the user is actually current logged in.
+         * the isseue in play is that Edge does not clear session cookies until the browser is closed, so if you kill the tab but don't close the browser, nothing changes.
+         * equally, cookies won't expire the way we expect if we just close the tab and reload them later.
+         * the sentinel gives us a quick way to verify that the user is in fact still logged in.
+         */
+        var sentinel = await SessionStorage.GetAsync<string>("sentinel");
+        if (sentinel is not null && !string.IsNullOrWhiteSpace(sentinel))
+        {
+            var verificationResponse = await Http.PostAsJsonAsync("http://localhost/api/v2/account/verifytoken", sentinel);
+            if (verificationResponse.IsSuccessStatusCode)
+            {
+                NavigationManager.NavigateTo("classic");
+                return;
+            }
+            else
+            {
+                // clear the sentinel
+                SessionStorage.SetAsync("sentinel", string.Empty);
+            }
+        }
+
+        NavigationManager.NavigateTo("join");
     }
 }

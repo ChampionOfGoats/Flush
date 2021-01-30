@@ -7,7 +7,7 @@
     "Flush.Authentication.AspNetCoreIdentity": {
       "commandName": "Project",
       "launchBrowser": true,
-      "applicationUrl": "http://localhost:6876",
+      "applicationUrl": "http://localhost:37880",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

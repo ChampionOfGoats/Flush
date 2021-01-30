@@ -1,0 +1,28 @@
+﻿@inherits ComponentBase
+
+<div class="row">
+    <div class="col text-center @ModeratorClass">
+        <button type="button" class="btn btn-lg btn-outline-success" @onclick="DoStartDiscussionAsync">Reveal!</button>
+    </div>
+</div>
+
+@code {
+    private bool isModerator = false;
+    private string ModeratorClass => !isModerator ? "moderator-only" : null;
+
+    protected override void OnInitialized()
+    {
+        // TODO: Register for moderator change event from hubconnection.
+    }
+
+    private void OnModeratorChanged()
+    {
+        // TODO: Respond to moderator change event from hubconnection.
+    }
+
+    private async Task DoStartDiscussionAsync(MouseEventArgs eventArgs)
+    {
+        // TODO: POST Transition, To = 0
+        await Task.CompletedTask;
+    }
+}

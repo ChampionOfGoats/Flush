@@ -1,0 +1,13 @@
+﻿@inherits ComponentBase
+
+<div class="mx-2 mt-2 mb-3 d-flex flex-row" id="@Data.Pid" data-avatar="@Data.Aid">
+    <div class="name-badge-icon @ModeratorClass"></div>
+    <div class="ml-3 name-badge-text">@Data.Name</div>
+</div>
+
+@code {
+    [Parameter]
+    public NameBadgeData Data { get; set; }
+
+    private string ModeratorClass => Data.IsModerator ? "moderator" : null;
+}

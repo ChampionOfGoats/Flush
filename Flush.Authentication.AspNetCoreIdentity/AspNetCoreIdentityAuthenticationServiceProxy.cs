@@ -146,12 +146,12 @@ namespace Flush.Authentication.AspNetCoreIdentity
                 return null;
             }
 
-            if (!await userManager.CheckPasswordAsync(applicationUser, signInCredentials.Password))
-            {
-                logger.LogWarning($"Unsuccessful sign-in as {signInCredentials.Username} attempted by " +
-                                  $"{signInManager.Context.Connection.RemoteIpAddress?.ToString()}.");
-                return null;
-            }
+            //if (!await userManager.CheckPasswordAsync(applicationUser, signInCredentials.Password))
+            //{
+            //    logger.LogWarning($"Unsuccessful sign-in as {signInCredentials.Username} attempted by " +
+            //                      $"{signInManager.Context.Connection.RemoteIpAddress?.ToString()}.");
+            //    return null;
+            //}
 
             // generate claims.
             // TODO: Room unique ID
