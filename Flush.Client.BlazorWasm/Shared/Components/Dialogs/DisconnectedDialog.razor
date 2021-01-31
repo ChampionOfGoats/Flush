@@ -1,0 +1,18 @@
+﻿<DialogBase ShowCloseButton="false" ShowOverlay="true">
+    <Title>Well, that's embarassing...</Title>
+    <Body>
+        <p>It looks like the connection with the server has been interrupted for too long.</p>
+        <p>Not to worry — you may be able log in again and continue where you left off.</p>
+    </Body>
+    <Footer>
+        <button type="button" class="btn btn-primary" @onclick="ReturnToLogin">Let's go!</button>
+    </Footer>
+</DialogBase>
+
+@code
+{
+    private void ReturnToLogin()
+    {
+        // TODO: Return to home.
+    }
+}

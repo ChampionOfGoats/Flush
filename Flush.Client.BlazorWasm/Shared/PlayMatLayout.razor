@@ -1,5 +1,32 @@
 ﻿@inherits LayoutComponentBase
+@using Flush.Client.BlazorWasm.Shared.Components;
 
 <div class="page">
-    <!-- The game play mat layout -->
+    <div class="main">
+        <div class="justify-content-sm-left col-sm-3">
+            <NameBadgeList />
+        </div>
+        <div class="justify-content-center col-sm-9">
+            <div class="@showPlay">
+                <PlayMat VotingModel="ModifiedFibonacci" />
+            </div>
+            <div class="@showResults">
+            </div>
+            <ModeratorControlDeck />
+        </div>
+    </div>
 </div>
+
+@code
+{
+    private bool showPlayMat = true;
+    private bool showResultsMat = false;
+    private string showPlay => showPlayMat ? null : "hide-mat";
+    private string showResults => showResultsMat ? null : "hide-mat";
+
+    private void ToggleMats()
+    {
+        showPlayMat = !showPlayMat;
+        showResultsMat = !showResultsMat;
+    }
+}

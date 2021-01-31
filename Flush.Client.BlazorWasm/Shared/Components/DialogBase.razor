@@ -1,0 +1,66 @@
+﻿<div class="modal @show" tabindex="1" role="dialog" style="display: @display">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                @if (Title is not null)
+                {
+                    <h5 class="modal-title">@Title</h5>
+                }
+                @if (ShowCloseButton)
+                {
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" @onclick="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                }
+            </div>
+                @if (Body is not null)
+                {
+                    <div class="modal-body">
+                        @Body
+                    </div>
+                }
+                @if (Footer is not null)
+                {
+                    <div class="modal-footer">
+                        @Footer
+                    </div>
+                }
+            </div>
+    </div>
+</div>
+
+@if (ShowOverlay)
+{
+    <div class="modal-backdrop fade @show"></div>
+}
+
+@code {
+    [Parameter]
+    public RenderFragment Title { get; set; }
+
+    [Parameter]
+    public RenderFragment Body { get; set; }
+
+    [Parameter]
+    public RenderFragment Footer { get; set; }
+
+    [Parameter]
+    public bool ShowCloseButton { get; set; }
+
+    [Parameter]
+    public bool ShowOverlay { get; set; }
+
+    private bool dialogIsOpen = false;
+    private string show => dialogIsOpen ? "show" : null;
+    private string display => dialogIsOpen ? "block" : "none";
+
+    public void Open()
+    {
+        dialogIsOpen = true;
+    }
+
+    public void Close()
+    {
+        dialogIsOpen = false;
+    }
+}

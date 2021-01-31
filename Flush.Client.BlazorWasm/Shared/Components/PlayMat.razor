@@ -18,6 +18,14 @@
     {
         await Task.Run(() =>
         {
+            VotingModel = VotingModel ?? "ModifiedFibonacci";
+        });
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.Run(() =>
+        {
             var typeString = $"{VotingModel}Vote";
             var resolvedType = GetType().FindOtherInAssembly(typeString);
             var resolvedValues = Enum.GetValues(resolvedType);

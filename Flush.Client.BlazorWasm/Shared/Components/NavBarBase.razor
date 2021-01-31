@@ -1,0 +1,24 @@
+﻿<div class="navbar">
+    <!-- navbar code-->
+</div>
+
+
+@code {
+    [Parameter]
+    public RenderFragment Brand { get; set; }
+
+    [Parameter]
+    public RenderFragment NavLinkCollection { get; set; }
+
+    [Parameter]
+    public bool Vertical { get; set; }
+
+    private bool isCollapsed = true;
+    private string collapse => isCollapsed ? "collapse" : null;
+    private string flowDirection => Vertical ? "flex-column" : "flex-row";
+
+    public void Toggle()
+    {
+        isCollapsed = !isCollapsed;
+    }
+}

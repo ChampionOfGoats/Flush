@@ -14,9 +14,12 @@ namespace Flush.Client.BlazorWasm
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
             builder.RootComponents.Add<App>("#app");
 
-            builder.Services.AddLogging();
-            builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
-            builder.Services.UseSessionStorage();
+            builder.Services
+                .AddLogging()
+                .AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) })
+                .AddSingleton<SessionClient>()
+                .AddSingleton<ChatClient>()
+                .UseSessionStorage();
 
             await builder.Build().RunAsync();
         }
